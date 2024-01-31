@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const GlobalContext = createContext(null);
@@ -10,6 +10,22 @@ export default function GlobalState({ children }) {
   const [recipeDetailsData, setRecipeDetailsData] = useState(null);
   const [favouritesList, setFavouritesList] = useState([]);
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res1 = await fetch(
+          "https://forkify-api.herokuapp.com/api/v2/recipes?search=pasta"
+        );
+        const data1 = await res1.json();
+        setRecipeList(data1?.data?.recipes || []);
+      } catch (e) {
+        console.error("Error fetching default recipe list:", e);
+        setRecipeList([]);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array ensures this runs only once on component mount
 
   async function handleSubmit(event) {
     event.preventDefault();
